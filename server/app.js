@@ -5,8 +5,11 @@ import morgan from 'morgan';
 import { config } from 'dotenv';
 import { connectDB } from './config/db';
 
+import { notFound,errorHandler } from './middlewares/errorHandling.moddleware.js';
+
 config()
 connectDB()
+
 
 //עליו מעמיסים את כל הניתובים
 const app=express();
@@ -29,5 +32,9 @@ app.get('/',(req, res) => {
 })
 
 //middlewares after request
+
+app.use(notFound); // כל בקשה לא מזוהה
+
+app.use(errorHandler); //next(err) מטפל בכל שגיאה שהועברה עם 
 
 export default app;
