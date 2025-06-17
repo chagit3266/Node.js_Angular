@@ -9,6 +9,7 @@ const categorySchema = new Schema({
   }],
 })
 // פונקציה שתחשב כמות מתכונים לקטגוריה 
+// ותבנה קטגוריות חדשות אם עוד לא קיימות 
 categorySchema.virtual('recipeCount').get(function () {
   return this.recipes.length;
 });
