@@ -4,7 +4,7 @@ const categorySchema = new Schema({
   code: { type: String },
   description: { type: String },
   recipes: [{
-    _id: { type: Schema.Types.ObjectId, ref: 'recipes' },
+    _id: { type: Schema.Types.ObjectId, ref: 'recipe' },
     name: String
   }],
 })
