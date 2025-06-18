@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { blockGuest, checkAuth,blockGuest } from "../middlewares/auth.middleware.js";
+import { blockGuest, checkAuth } from "../middlewares/auth.middleware.js";
 
 import { getAllRecipe, getRecipeById, addRecipe, deleteRecipe, updateRecipe } from "../controllers/recipe.controller.js";
 
