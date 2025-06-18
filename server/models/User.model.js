@@ -2,7 +2,6 @@ import { model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Joi from 'joi'
-import { updatePassword } from "../controllers/user.controller";
 
 
 const userSchema = new Schema({

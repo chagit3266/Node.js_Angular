@@ -11,7 +11,8 @@ const router = Router();
 router.get('/', checkAuth, getAllRecipe)
 
 //Get by id
-router.get('/:id', getRecipeById)
+//נבדוק אם רשום ע"מ שאם יבקש מתכון פרטי לבדוק האם הוא שלו
+router.get('/:id',checkAuth, getRecipeById)
 
 //add recipe
 router.post('/', checkAuth, blockGuest, addRecipe)
@@ -22,5 +23,5 @@ router.put('/',checkAuth, blockGuest,updateRecipe)
 //delete recipe
 router.delete('/',checkAuth, blockGuest,deleteRecipe)
 
-
+export default router
 

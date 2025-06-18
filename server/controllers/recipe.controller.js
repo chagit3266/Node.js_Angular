@@ -23,12 +23,13 @@ export const getAllRecipe = async (req, res, next) => {
         next({ status: error.status, message: error.message });
     }
 }
-//צריך לשים לב אם הוא מקבל מתכון שהוא פרטי אז לא להחזיר
+//צריך לשים לב אם הוא רוצה מתכון שהוא פרטי אז לא להחזיר
 export const getRecipeById = async (req, res, next) => {
     try {
+        const idOwner = req.currentUser?._id || null
         let { _id } = req.query
         let recipe = await Recipe.findById(_id)
-        if (!recipe) {
+        if (!recipe || recipe.owner._id!==idOwner) {
             return next({ message: 'Recipe not found', status: 404 });
         }
         res.status(200).json(recipe);

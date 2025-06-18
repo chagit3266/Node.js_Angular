@@ -3,9 +3,12 @@ import cors from 'cors';
 import morgan from 'morgan';
 
 import { config } from 'dotenv';
-import { connectDB } from './config/db';
+import { connectDB } from './config/db.js';
 
 import { notFound,errorHandler } from './middlewares/errorHandling.moddleware.js';
+
+import CategoryRouter from './routes/category.routes.js'
+import UserRouter from './routes/user.routes.js'
 
 config()
 connectDB()
@@ -30,6 +33,10 @@ app.use(cors())
 app.get('/',(req, res) => {
     res.json('HELLO TO YOU');
 })
+
+app.use('/category',CategoryRouter)
+
+app.use('/user',UserRouter)
 
 //middlewares after request
 
