@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import { model, Schema } from "mongoose";
 
 
@@ -33,9 +34,30 @@ categorySchema.virtual('recipeCount').get(function () {
 
 categorySchema.pre('save', async function() {
   if (!this.code) {
-    const seq = await getNextSequence('recipeCode');
+    const seq = await getNextSequence('categoryCode');
     this.code = 'CAT' + seq.toString().padStart(6, '0');
   }
 });
+
+
+export const JoiCategorySchema={
+  create: Joi.object({
+    description: Joi.string().required(),
+    recipes: Joi.array().items(
+      Joi.object({
+        _id: Joi.string().hex().length(24).required(),
+        name: Joi.string().required()
+      })
+    ).optional(),
+  }),
+  update: Joi.object({
+    recipes: Joi.array().items(
+      Joi.object({
+        _id: Joi.string().hex().length(24).required(),
+        name: Joi.string().required()
+      })
+    ).required(),
+  })
+}
 
 export default model("category", categorySchema)
