@@ -23,5 +23,6 @@ export const blockGuest = (req, res, next) => {
 };
 
 export const checkAdmi = (req, res, next) => {
-
+    req.isAdmin=true
+    next()
 }

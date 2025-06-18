@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { JoiUserSchema } from ''
+import { JoiUserSchema } from '../models/User.model.js'
 import User from '../models/User.model.js'
 
 export const getAllUsers = async (req, res, next) => {
@@ -13,16 +13,19 @@ export const getAllUsers = async (req, res, next) => {
 
 export const updatePassword = async (req, res, next) => {
     try {
-        const { _id } = req.currentUser
-        const { password } = req.body;
+        const { error, value } = JoiUserSchema.update.validate(req.body);
+        if (error)
+            return next({ status: 400, message: error.details[0].message });
 
-        if (!password) {
+        const { _id } = req.currentUser
+
+        if (!value.password) {
             return next({ status: 400, message: "Password is required" });
         }
 
         const user = await User.findById(_id);
-        
-        user.password = password;
+
+        user.password = value.password;
         await user.save();
 
         res.status(200).json({ message: "Password updated successfully" });
@@ -55,7 +58,10 @@ export const signUp = async (req, res, next) => {
         const existing = await User.findOne({ email: value.email });
         if (existing)
             return next({ status: 409, message: 'Email already registered' });
-
+        value.role = 'user'
+        if (req.isAdmin) {
+            value.role = 'admin';
+        }
         const user = new User(value)
         await user.save()
         const token = generateToken(user);
