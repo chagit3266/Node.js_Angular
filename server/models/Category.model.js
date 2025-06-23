@@ -42,7 +42,7 @@ categorySchema.pre('save', async function() {
 
 export const JoiCategorySchema={
   create: Joi.object({
-    description: Joi.string().required(),
+    description: Joi.string().min(2).required(),
     recipes: Joi.array().items(
       Joi.object({
         _id: Joi.string().hex().length(24).required(),
@@ -50,13 +50,17 @@ export const JoiCategorySchema={
       })
     ).optional(),
   }),
-  update: Joi.object({
-    recipes: Joi.array().items(
-      Joi.object({
-        _id: Joi.string().hex().length(24).required(),
-        name: Joi.string().required()
-      })
-    ).required(),
+  // update: Joi.object({
+  //   recipes: Joi.array().items(
+  //     Joi.object({
+  //       _id: Joi.string().hex().length(24).required(),
+  //       name: Joi.string().required()
+  //     })
+  //   ).required(),
+  // }),
+  reference: Joi.object({
+    code: Joi.string().pattern(/^CAT\d{6}$/).required(),
+    name: Joi.string().min(2).optional()
   })
 }
 

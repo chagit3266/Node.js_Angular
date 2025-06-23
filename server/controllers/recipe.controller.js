@@ -29,7 +29,7 @@ export const getRecipeById = async (req, res, next) => {
         const idOwner = req.currentUser?._id || null
         let { _id } = req.query
         let recipe = await Recipe.findById(_id)
-        if (!recipe || recipe.owner._id!==idOwner) {
+        if (!recipe || recipe.owner._id !== idOwner) {
             return next({ message: 'Recipe not found', status: 404 });
         }
         res.status(200).json(recipe);
@@ -62,8 +62,14 @@ export const addRecipe = async (req, res, next) => {
             ...req.body,
             owner: req.currentUser,
         })
-        const save = await recipe.save();
+
         //צריך לעדכן גם את הקטגוריות
+        //נעדכן לפני שמירה ע"מ שיחזיר לנו את הקטגוריות החדשות שנבנו בעקבות המתכון
+
+        recipe.category = await 
+       
+        const save = await recipe.save();
+
         res.status(201).json(save);
     } catch (error) {
         next({ status: error.status, message: error.message });
@@ -74,15 +80,19 @@ export const addRecipe = async (req, res, next) => {
 export const updateRecipe = async (req, res, next) => {
     try {
         const { _id } = req.query
+        //צריך לעדכן גם את הקטגוריות
+        //קודם נמחוק את הקטגוריות שהיו קודם
+        //נוסיף את הקטגוריות החדשות
     } catch (error) {
-
+        next({ status: error.status, message: error.message });
     }
 }
 
 export const deleteRecipe = async (req, res, next) => {
     try {
-
+        const { _id } = req.query
+        //צריך לעדכן גם את הקטגוריות
     } catch (error) {
-
+        next({ status: error.status, message: error.message });
     }
 }
