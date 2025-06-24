@@ -23,7 +23,7 @@ export const getAllRecipe = async (req, res, next) => {
         next({ status: error.status, message: error.message });
     }
 }
-//צריך לשים לב אם הוא רוצה מתכון שהוא פרטי אז לא להחזיר
+//אם הוא רוצה מתכון שהוא פרטי אז לא להחזיר
 export const getRecipeById = async (req, res, next) => {
     try {
         const idOwner = req.currentUser?._id || null
@@ -65,7 +65,6 @@ export const addRecipe = async (req, res, next) => {
 
         //צריך לעדכן גם את הקטגוריות
         //נעדכן לפני שמירה ע"מ שיחזיר לנו את הקטגוריות החדשות שנבנו בעקבות המתכון
-
         recipe.category = await 
        
         const save = await recipe.save();

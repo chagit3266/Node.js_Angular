@@ -61,7 +61,11 @@ export const JoiCategorySchema={
   reference: Joi.object({
     code: Joi.string().pattern(/^CAT\d{6}$/).required(),
     name: Joi.string().min(2).optional()
-  })
+  }),
+  recipeRef: Joi.object({
+    _id: Joi.string().hex().length(24).required(),
+    name: Joi.string().min(2).required()
+  }),
 }
 
 export default model("category", categorySchema)
