@@ -19,9 +19,14 @@ export const removeRecipeFromCategories = async (recipe) => {
 
 //nameCategory כאן נוסיף לפי
 //כי לא בטוח הקטגוריה כבר קיימת
+//נחזיר את רשימת הקטגוריות החדשה
 export const addRecipeToCategories = async (recipe, categories) => {
+
+    let arrCategories = []
+    const savePromises = [];
+
     //cat={name:"",code:""}
-    for (const cat of recipe.categories) {
+    for (const cat of categories) {
 
         let category = null;
 
@@ -51,11 +56,22 @@ export const addRecipeToCategories = async (recipe, categories) => {
         const { error, value } = JoiCategorySchema.recipeRef.validate(recipe)
         if (error) continue;
         const exists = category.recipes.some(r => r._id.toString() === recipe._id.toString());
-        if (!exists) {
-            category.recipes.push(value);
-            await category.save();
-        }
+        if (exists) continue;
+        category.recipes.push(value);
+        
+        // category = await category.save();
+        // arrCategories.push({ _id: category._id, description: category.description })
+        
+        //ונחזיר Promises נוסיף למערך קטגוריות ולמערך  
+        savePromises.push(
+            category.save().then(saved => {
+                arrCategories.push({ _id: saved._id, description: saved.description });
+            }))
     }
+    // ממתינים לכל השמירות במקביל
+    await Promise.all(savePromises);
+
+    return arrCategories
 }
 
 const nameExist = async (name) => {

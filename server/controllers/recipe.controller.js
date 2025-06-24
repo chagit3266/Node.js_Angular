@@ -1,5 +1,7 @@
 import Recipe from '../models/Recipe.model.js'
 
+import { addRecipeToCategories, removeRecipeFromCategories } from '../service/category.service.js'
+
 export const getAllRecipe = async (req, res, next) => {
     try {
         const id = req.currentUser?._id || null
@@ -58,15 +60,17 @@ export const getRecipeById = async (req, res, next) => {
 
 export const addRecipe = async (req, res, next) => {
     try {
+        const { categories, ...recipeData } = req.body;
+
         const recipe = new Recipe({
-            ...req.body,
+            ...recipeData,//אני לא רוצה לשמור פה את הקטגוריות כי נשלחות בצורה שונה מהשמירה
             owner: req.currentUser,
         })
 
         //צריך לעדכן גם את הקטגוריות
         //נעדכן לפני שמירה ע"מ שיחזיר לנו את הקטגוריות החדשות שנבנו בעקבות המתכון
-        recipe.category = await 
-       
+        recipe.categories = await addRecipeToCategories(recipe, categories || [])
+
         const save = await recipe.save();
 
         res.status(201).json(save);
@@ -77,11 +81,29 @@ export const addRecipe = async (req, res, next) => {
 
 
 export const updateRecipe = async (req, res, next) => {
+
     try {
-        const { _id } = req.query
-        //צריך לעדכן גם את הקטגוריות
-        //קודם נמחוק את הקטגוריות שהיו קודם
-        //נוסיף את הקטגוריות החדשות
+        const { _id } = req.query;
+        const {newRecipe } = req.body
+        const preRecipe = await Recipe.findById(_id)
+        //נעדכן את שאר הנתונים אם נשלחו לפני עדכון הקטגוריות
+        for (const key in newRecipe) {
+            if(key==='categories')continue;
+            if (newRecipe[key] !== undefined &&
+                !_.isEqual(preRecipe[key], newRecipe[key])) {
+                preRecipe[key] = newRecipe[key];
+            }
+        }
+        //צריך לעדכן גם את הקטגוריות רק אם השתנו
+        if (newRecipe.categories !== undefined &&
+            !_.isEqual(newRecipe.categories, preRecipe.categories)) {
+            //קודם נמחוק את הקטגוריות שהיו קודם
+            await removeRecipeFromCategories(preRecipe)
+            //נוסיף את הקטגוריות החדשות
+            preRecipe.categories = await addRecipeToCategories(preRecipe, newRecipe.categories || [])
+        }
+        const save = await preRecipe.save()
+        res.status(200).json(save);
     } catch (error) {
         next({ status: error.status, message: error.message });
     }
@@ -90,7 +112,11 @@ export const updateRecipe = async (req, res, next) => {
 export const deleteRecipe = async (req, res, next) => {
     try {
         const { _id } = req.query
+
+        const recipe = await Recipe.findById(_id)
         //צריך לעדכן גם את הקטגוריות
+        await removeRecipeFromCategories(recipe)
+    
     } catch (error) {
         next({ status: error.status, message: error.message });
     }
