@@ -84,11 +84,11 @@ export const updateRecipe = async (req, res, next) => {
 
     try {
         const { _id } = req.query;
-        const {newRecipe } = req.body
+        const { newRecipe } = req.body
         const preRecipe = await Recipe.findById(_id)
         //נעדכן את שאר הנתונים אם נשלחו לפני עדכון הקטגוריות
         for (const key in newRecipe) {
-            if(key==='categories')continue;
+            if (key === 'categories') continue;
             if (newRecipe[key] !== undefined &&
                 !_.isEqual(preRecipe[key], newRecipe[key])) {
                 preRecipe[key] = newRecipe[key];
@@ -112,11 +112,20 @@ export const updateRecipe = async (req, res, next) => {
 export const deleteRecipe = async (req, res, next) => {
     try {
         const { _id } = req.query
+        if (!_id) {
+            return next({ status: 400, message: "_id is required" });
+        }
 
         const recipe = await Recipe.findById(_id)
+        if (!recipe) {
+            return next({ status: 404, message: "Recipe not found" });
+        }
         //צריך לעדכן גם את הקטגוריות
         await removeRecipeFromCategories(recipe)
-    
+
+        await Recipe.findByIdAndDelete(_id);
+
+        res.status(200).json({ message: "Recipe deleted successfully" });
     } catch (error) {
         next({ status: error.status, message: error.message });
     }
